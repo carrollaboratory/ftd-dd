@@ -1,0 +1,32 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "build-dd"
+authors = [
+  { name = "Eric Torstenson", email = "eric.s.torstenson@vumc.org" }
+]
+description = "Extract FTD friendly data-dictionaries from various sources including LinkML models."
+readme = "README.md"
+requires-python = ">=3.10"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+
+dependencies = [
+  "rich",
+]
+
+dynamic = ["version"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+linkml2dd = "builddd.linkml:main"
+
