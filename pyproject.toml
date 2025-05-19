@@ -28,5 +28,5 @@ dynamic = ["version"]
 where = ["src"]
 
 [project.scripts]
-linkml2dd = "builddd.linkml:main"
+linkml_extract_dd = "builddd.linkml:cli"
 
