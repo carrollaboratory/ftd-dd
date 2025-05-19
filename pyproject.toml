@@ -14,6 +14,8 @@ description = "Extract FTD friendly data-dictionaries from various sources inclu
 readme = "README.md"
 requires-python = ">=3.10"
 
+version = "0.0.1"
+
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
@@ -22,7 +24,6 @@ dependencies = [
   "rich",
 ]
 
-dynamic = ["version"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
