@@ -1,5 +1,5 @@
-# build-dd
-Tools to help create research data-dictionaries
+# ftd-dd
+Free The Data team's DD tools created to help produce research data-dictionaries
 
 
 # Extract data-dictionary from a LinkML model
