@@ -6,7 +6,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "build-dd"
+name = "ftd-dd"
 authors = [
   { name = "Eric Torstenson", email = "eric.s.torstenson@vumc.org" }
 ]
@@ -28,5 +28,5 @@ dynamic = ["version"]
 where = ["src"]
 
 [project.scripts]
-linkml_extract_dd = "builddd.linkml:cli"
+linkml_extract_dd = "ftddd.linkml:cli"
 

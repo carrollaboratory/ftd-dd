@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 from enum import Enum
 
-from builddd.dd import DataDictionary, DataType
+from ftddd.dd import DataDictionary, DataType
 
 import click
 from linkml_runtime.dumpers import yaml_dumper
