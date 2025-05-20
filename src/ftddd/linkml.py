@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from typing import Any
 from enum import Enum
 
+from rich import print
+
 from ftddd.dd import DataDictionary, DataType
 
 import click
@@ -115,7 +117,6 @@ class LinkMLExtract(Generator):
             nonlocal ddl_str
             ddl_str += f"{str(sql.compile(dialect=engine.dialect)).rstrip()};"
 
-        # pdb.set_trace()
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
 
         # We may not use this return, but it does some important stuff behind 
@@ -236,7 +237,6 @@ class LinkMLExtract(Generator):
         pk_name = pk.alias if pk.alias else pk.name
         return f"{cn}.{pk_name}"
 
-
 @shared_arguments(LinkMLExtract)
 @click.command(name="csvdd")
 @click.option(
@@ -260,6 +260,7 @@ class LinkMLExtract(Generator):
 def cli(
     yamlfile: str,
     relmodel_output: str,
+    output_directory: str,
     sqla_file: str | None = None,
     dialect: str | None = None,
     use_foreign_keys: bool = True,
@@ -269,7 +270,8 @@ def cli(
     if dialect:
         gen.dialect = dialect
 
-    print(gen.generate_ddl())
+    file_list = gen.generate_ddl()
+    print(f"\n[green]{len(file_list)} Data dictionary files written to {output_directory}[/green]")
 
 if __name__ == "__main__":
     cli()

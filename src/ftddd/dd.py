@@ -144,4 +144,4 @@ class DataDictionary:
         for tname, table in self.tables.items():
             filenames.append(str(table.write_csv(outputdir)))
 
-        return "\n".join(filenames)
+        return filenames
