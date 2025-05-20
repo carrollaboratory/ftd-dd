@@ -22,6 +22,7 @@ classifiers = [
 
 dependencies = [
   "rich",
+  "linkml>=1.9.1"
 ]
 
 
