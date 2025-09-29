@@ -145,3 +145,21 @@ class DataDictionary:
             filenames.append(str(table.write_csv(outputdir)))
 
         return filenames
+
+    def write_enums(self, outdir):
+        """
+        Write variable names and their enumerations for each table to separate CSV files.
+        """
+        Path(outdir).mkdir(parents=True, exist_ok=True)
+
+        for tname, table in self.tables.items():
+            filename = Path(outdir) / f"{tname}-enums.csv"
+
+            with filename.open("wt", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["variable_name", "enumerations"])
+
+                for variable in getattr(table, "variables", []):
+                    if hasattr(variable, "enumerations") and variable.enumerations:
+                        enums = ";".join([str(x) for x in variable.enumerations])
+                        writer.writerow([variable.name, enums])

@@ -98,6 +98,7 @@ class LinkMLExtract(Generator):
     # ObjectVars
     use_foreign_keys: bool = True
     output_directory: str = "project/data-dictionary"
+    enum_output_directory: str = "project/enumerations"
 
     def serialize(self, **kwargs: dict[str, Any]) -> str:
         return self.generate_ddl(**kwargs)
@@ -185,6 +186,7 @@ class LinkMLExtract(Generator):
                         if s.unit:
                             variable.units = f"UCUM:{s.unit['ucum_code']}"
 
+        dd.write_enums(self.enum_output_directory)
         return dd.write_csv(self.output_directory)
 
     def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
@@ -254,13 +256,20 @@ class LinkMLExtract(Generator):
     "--output-directory",
     default="project/data-dictionary",
     show_default=True,
-    help="Specify where data-dictionary files are to be written."
+    help="Specify where data-dictionary files are to be written.",
+)
+@click.option(
+    "--enum_output-directory",
+    default="project/enumerations",
+    show_default=True,
+    help="Specify where Enumeration files are to be written.",
 )
 @click.version_option(__generator_version__, "-V", "--version")
 def cli(
     yamlfile: str,
     relmodel_output: str,
     output_directory: str,
+    enum_output_directory: str,
     sqla_file: str | None = None,
     dialect: str | None = None,
     use_foreign_keys: bool = True,
@@ -272,6 +281,10 @@ def cli(
 
     file_list = gen.generate_ddl()
     print(f"\n[green]{len(file_list)} Data dictionary files written to {output_directory}[/green]")
+    print(
+        f"[green]{len(file_list)} Enum files written to {enum_output_directory}[/green]"
+    )
+
 
 if __name__ == "__main__":
     cli()
