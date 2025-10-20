@@ -281,9 +281,7 @@ def cli(
 
     file_list = gen.generate_ddl()
     print(f"\n[green]{len(file_list)} Data dictionary files written to {output_directory}[/green]")
-    print(
-        f"[green]{len(file_list)} Enum files written to {enum_output_directory}[/green]"
-    )
+    print(f"[green]All ACR tgt enums written to {enum_output_directory}[/green]")
 
 
 if __name__ == "__main__":

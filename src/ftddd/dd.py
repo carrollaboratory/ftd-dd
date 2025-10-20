@@ -126,10 +126,10 @@ class DdTable:
 class DataDictionary:
     def __init__(self):
         """Collection of data-dictionary tables to be written as CSVs."""
-    
-        #self.ignored_classes = ignored_classes
+
+        # self.ignored_classes = ignored_classes
         self.tables = {}
-        
+
     def add_table(self, table_name, description):
         cls = DdTable(table_name, description)
         self.tables[cls.name] = cls 
@@ -137,7 +137,7 @@ class DataDictionary:
 
     def table(self, table_name):
         return self.tables.get(table_name)
-    
+
     def write_csv(self, outputdir):
         Path(outputdir).mkdir(parents=True, exist_ok=True)
         filenames = []
@@ -146,20 +146,34 @@ class DataDictionary:
 
         return filenames
 
-    def write_enums(self, outdir):
+    def write_enums(self, outdir, filename="acr_tgt_enums.csv"):
         """
-        Write variable names and their enumerations for each table to separate CSV files.
+        Write all enumerations across ACR target dds into a single CSV file
         """
         Path(outdir).mkdir(parents=True, exist_ok=True)
+        combined_filename = Path(outdir) / filename
 
-        for tname, table in self.tables.items():
-            filename = Path(outdir) / f"{tname}-enums.csv"
+        with combined_filename.open("wt", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                [
+                    "table_name",
+                    "variable_name",
+                    "enumeration_code",
+                    "enumeration_display",
+                ]
+            )
 
-            with filename.open("wt", newline="") as f:
-                writer = csv.writer(f)
-                writer.writerow(["variable_name", "enumerations"])
-
-                for variable in getattr(table, "variables", []):
-                    if hasattr(variable, "enumerations") and variable.enumerations:
-                        enums = ";".join([str(x) for x in variable.enumerations])
-                        writer.writerow([variable.name, enums])
+            for tname, table in self.tables.items():
+                for variable in table.variables:
+                    if variable.enumerations:
+                        for enum in variable.enumerations:
+                            writer.writerow(
+                                [
+                                    tname,
+                                    variable.name,
+                                    enum.name,
+                                    enum.description or "",
+                                ]
+                            )
+        return combined_filename
