@@ -24,9 +24,12 @@ datatype_lookup = {
 
 
 class Enumeration:
-    def __init__(self, name, description):
+
+    def __init__(self, name, description, title=None, meaning=None):
         self.name = name 
         self.description = description 
+        self.title = title
+        self.meaning = meaning
 
     def __repr__(self):
         if self.description is not None:
@@ -46,7 +49,7 @@ class DdVar:
     def set_type(self, data_type): 
         match type(data_type).__name__:
             case "Text":
-                self.data_type = DataType.STR 
+                self.data_type = DataType.STR
             case "Enum":
                 self.data_type = DataType.ENUM 
             case "Float":
@@ -56,9 +59,9 @@ class DdVar:
             case _:
                 self.data_type = DataType.STR
         return self.data_type
-    
-    def add_enumeration(self, name, description):
-        self.enumerations.append(Enumeration(name, description))
+
+    def add_enumeration(self, name, description, title=None, meaning=None):
+        self.enumerations.append(Enumeration(name, description, title, meaning))
 
     def write_to_csv(self, writer, dd_format):
         enums = ""
@@ -161,19 +164,24 @@ class DataDictionary:
                     "variable_name",
                     "enumeration_code",
                     "enumeration_display",
+                    "enumeration_title",
+                    "enumeration_meaning",
                 ]
             )
 
             for tname, table in self.tables.items():
-                for variable in table.variables:
-                    if variable.enumerations:
+                for variable in getattr(table, "variables", []):
+                    if hasattr(variable, "enumerations") and variable.enumerations:
                         for enum in variable.enumerations:
+
                             writer.writerow(
                                 [
                                     tname,
                                     variable.name,
                                     enum.name,
                                     enum.description or "",
+                                    enum.title or "",
+                                    enum.meaning or "",
                                 ]
                             )
         return combined_filename

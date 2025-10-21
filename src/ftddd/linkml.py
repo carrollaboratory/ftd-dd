@@ -177,8 +177,18 @@ class LinkMLExtract(Generator):
                             for ename, enum in sv_enum['permissible_values'].items():
                                 desc = enum['description']
                                 if desc is None:
-                                    desc = enum['title']
-                                variable.add_enumeration(enum['text'], desc)
+                                    desc = enum["title"]
+
+                                e_title = enum["title"]
+                                if e_title is None or e_title == desc:
+                                    e_title = ""
+
+                                e_meaning = enum["meaning"]
+                                if e_meaning is None:
+                                    e_meaning = ""
+                                variable.add_enumeration(
+                                    enum["text"], desc, e_title, e_meaning
+                                )
 
                             if len(variable.enumerations) == 0:
                                 variable.comment = sv_enum['description'].strip()
