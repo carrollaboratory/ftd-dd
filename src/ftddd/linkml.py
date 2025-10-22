@@ -120,8 +120,8 @@ class LinkMLExtract(Generator):
 
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
 
-        # We may not use this return, but it does some important stuff behind 
-        # the scenes and, therefore, must be performed. 
+        # We may not use this return, but it does some important stuff behind
+        # the scenes and, therefore, must be performed.
         schema_metadata = MetaData()
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
         if not self.use_foreign_keys:
@@ -187,9 +187,7 @@ class LinkMLExtract(Generator):
                                 if e_meaning is None:
                                     e_meaning = ""
 
-                                e_system = (
-                                    f"https://anvilproject.github.io/{sv_enum.name}"
-                                )
+                                e_system = f"https://anvilproject.github.io/acr-harmonized-data-model/{sv_enum.name}"
                                 if e_system is None:
                                     e_system = ""
 
