@@ -188,8 +188,6 @@ class LinkMLExtract(Generator):
                                     e_meaning = ""
 
                                 e_system = f"https://anvilproject.github.io/acr-harmonized-data-model/{sv_enum.name}"
-                                if e_system is None:
-                                    e_system = ""
 
                                 variable.add_enumeration(
                                     enum["text"],
