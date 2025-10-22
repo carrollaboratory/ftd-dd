@@ -24,9 +24,14 @@ datatype_lookup = {
 
 
 class Enumeration:
-    def __init__(self, name, description):
+
+    def __init__(self, name, description, title=None, meaning=None, system=None, enum_grp=None):
         self.name = name 
         self.description = description 
+        self.title = title
+        self.meaning = meaning
+        self.system = system
+        self.enum_grp = enum_grp
 
     def __repr__(self):
         if self.description is not None:
@@ -46,7 +51,7 @@ class DdVar:
     def set_type(self, data_type): 
         match type(data_type).__name__:
             case "Text":
-                self.data_type = DataType.STR 
+                self.data_type = DataType.STR
             case "Enum":
                 self.data_type = DataType.ENUM 
             case "Float":
@@ -56,9 +61,9 @@ class DdVar:
             case _:
                 self.data_type = DataType.STR
         return self.data_type
-    
-    def add_enumeration(self, name, description):
-        self.enumerations.append(Enumeration(name, description))
+
+    def add_enumeration(self, name, description, title=None, meaning=None, system=None, enum_grp=None):
+        self.enumerations.append(Enumeration(name, description, title, meaning, system, enum_grp))
 
     def write_to_csv(self, writer, dd_format):
         enums = ""
@@ -126,10 +131,10 @@ class DdTable:
 class DataDictionary:
     def __init__(self):
         """Collection of data-dictionary tables to be written as CSVs."""
-    
-        #self.ignored_classes = ignored_classes
+
+        # self.ignored_classes = ignored_classes
         self.tables = {}
-        
+
     def add_table(self, table_name, description):
         cls = DdTable(table_name, description)
         self.tables[cls.name] = cls 
@@ -137,7 +142,7 @@ class DataDictionary:
 
     def table(self, table_name):
         return self.tables.get(table_name)
-    
+
     def write_csv(self, outputdir):
         Path(outputdir).mkdir(parents=True, exist_ok=True)
         filenames = []
@@ -145,3 +150,44 @@ class DataDictionary:
             filenames.append(str(table.write_csv(outputdir)))
 
         return filenames
+
+    def write_enums(self, outdir, filename="acr_tgt_enums.csv"):
+        """
+        Write all enumerations across ACR target dds into a single CSV file
+        """
+        Path(outdir).mkdir(parents=True, exist_ok=True)
+        combined_filename = Path(outdir) / filename
+
+        with combined_filename.open("wt", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                [
+                    "table_name",
+                    "variable_name",
+                    "enumeration_code",
+                    "enumeration_display",
+                    "enumeration_title",
+                    "enumeration_meaning",
+                    "enumeration_system",
+                    "enumeration_group"
+                ]
+            )
+
+            for tname, table in self.tables.items():
+                for variable in getattr(table, "variables", []):
+                    if hasattr(variable, "enumerations") and variable.enumerations:
+                        for enum in variable.enumerations:
+
+                            writer.writerow(
+                                [
+                                    tname,
+                                    variable.name,
+                                    enum.name,
+                                    enum.description or "",
+                                    enum.title or "",
+                                    enum.meaning or "",
+                                    enum.system or "",
+                                    enum.enum_grp or ""
+                                ]
+                            )
+        return combined_filename

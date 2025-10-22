@@ -98,6 +98,7 @@ class LinkMLExtract(Generator):
     # ObjectVars
     use_foreign_keys: bool = True
     output_directory: str = "project/data-dictionary"
+    enum_output_directory: str = "project/enumerations"
 
     def serialize(self, **kwargs: dict[str, Any]) -> str:
         return self.generate_ddl(**kwargs)
@@ -119,8 +120,8 @@ class LinkMLExtract(Generator):
 
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
 
-        # We may not use this return, but it does some important stuff behind 
-        # the scenes and, therefore, must be performed. 
+        # We may not use this return, but it does some important stuff behind
+        # the scenes and, therefore, must be performed.
         schema_metadata = MetaData()
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
         if not self.use_foreign_keys:
@@ -176,8 +177,26 @@ class LinkMLExtract(Generator):
                             for ename, enum in sv_enum['permissible_values'].items():
                                 desc = enum['description']
                                 if desc is None:
-                                    desc = enum['title']
-                                variable.add_enumeration(enum['text'], desc)
+                                    desc = enum["title"]
+
+                                e_title = enum["title"]
+                                if e_title is None or e_title == desc:
+                                    e_title = ""
+
+                                e_meaning = enum["meaning"]
+                                if e_meaning is None:
+                                    e_meaning = ""
+
+                                e_system = f"https://anvilproject.github.io/acr-harmonized-data-model/{sv_enum.name}"
+
+                                variable.add_enumeration(
+                                    enum["text"],
+                                    desc,
+                                    e_title,
+                                    e_meaning,
+                                    e_system,
+                                    sv_enum.name,
+                                )
 
                             if len(variable.enumerations) == 0:
                                 variable.comment = sv_enum['description'].strip()
@@ -185,6 +204,7 @@ class LinkMLExtract(Generator):
                         if s.unit:
                             variable.units = f"UCUM:{s.unit['ucum_code']}"
 
+        dd.write_enums(self.enum_output_directory)
         return dd.write_csv(self.output_directory)
 
     def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
@@ -254,13 +274,20 @@ class LinkMLExtract(Generator):
     "--output-directory",
     default="project/data-dictionary",
     show_default=True,
-    help="Specify where data-dictionary files are to be written."
+    help="Specify where data-dictionary files are to be written.",
+)
+@click.option(
+    "--enum_output-directory",
+    default="project/enumerations",
+    show_default=True,
+    help="Specify where Enumeration files are to be written.",
 )
 @click.version_option(__generator_version__, "-V", "--version")
 def cli(
     yamlfile: str,
     relmodel_output: str,
     output_directory: str,
+    enum_output_directory: str,
     sqla_file: str | None = None,
     dialect: str | None = None,
     use_foreign_keys: bool = True,
@@ -272,6 +299,8 @@ def cli(
 
     file_list = gen.generate_ddl()
     print(f"\n[green]{len(file_list)} Data dictionary files written to {output_directory}[/green]")
+    print(f"[green]All ACR tgt enums written to {enum_output_directory}[/green]")
+
 
 if __name__ == "__main__":
     cli()
