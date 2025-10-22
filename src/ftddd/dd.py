@@ -25,11 +25,13 @@ datatype_lookup = {
 
 class Enumeration:
 
-    def __init__(self, name, description, title=None, meaning=None):
+    def __init__(self, name, description, title=None, meaning=None, system=None, enum_grp=None):
         self.name = name 
         self.description = description 
         self.title = title
         self.meaning = meaning
+        self.system = system
+        self.enum_grp = enum_grp
 
     def __repr__(self):
         if self.description is not None:
@@ -60,8 +62,8 @@ class DdVar:
                 self.data_type = DataType.STR
         return self.data_type
 
-    def add_enumeration(self, name, description, title=None, meaning=None):
-        self.enumerations.append(Enumeration(name, description, title, meaning))
+    def add_enumeration(self, name, description, title=None, meaning=None, system=None, enum_grp=None):
+        self.enumerations.append(Enumeration(name, description, title, meaning, system, enum_grp))
 
     def write_to_csv(self, writer, dd_format):
         enums = ""
@@ -166,6 +168,8 @@ class DataDictionary:
                     "enumeration_display",
                     "enumeration_title",
                     "enumeration_meaning",
+                    "enumeration_system",
+                    "enumeration_group"
                 ]
             )
 
@@ -182,6 +186,8 @@ class DataDictionary:
                                     enum.description or "",
                                     enum.title or "",
                                     enum.meaning or "",
+                                    enum.system or "",
+                                    enum.enum_grp or ""
                                 ]
                             )
         return combined_filename

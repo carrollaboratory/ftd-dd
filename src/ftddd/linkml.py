@@ -186,8 +186,20 @@ class LinkMLExtract(Generator):
                                 e_meaning = enum["meaning"]
                                 if e_meaning is None:
                                     e_meaning = ""
+
+                                e_system = (
+                                    f"https://anvilproject.github.io/{sv_enum.name}"
+                                )
+                                if e_system is None:
+                                    e_system = ""
+
                                 variable.add_enumeration(
-                                    enum["text"], desc, e_title, e_meaning
+                                    enum["text"],
+                                    desc,
+                                    e_title,
+                                    e_meaning,
+                                    e_system,
+                                    sv_enum.name,
                                 )
 
                             if len(variable.enumerations) == 0:
