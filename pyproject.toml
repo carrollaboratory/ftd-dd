@@ -12,7 +12,7 @@ authors = [
 ]
 description = "Extract FTD friendly data-dictionaries from various sources including LinkML models."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 
 version = "0.0.1"
 
