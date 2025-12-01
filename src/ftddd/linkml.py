@@ -153,7 +153,13 @@ class LinkMLExtract(Generator):
                 if c.attributes:
                     cols = []
                     for sn, s in c.attributes.items():
-                        variable = tbl.add_variable(sn, s.description)
+                        variable_name = sn 
+
+                        if hasattr(c.attributes[sn]['annotations'], 'db_column') and \
+                            hasattr(c.attributes[sn]['annotations'].db_column, 'tag'):
+                          if c.attributes[sn]['annotations'].db_column.tag == 'db_column':
+                            variable_name = c.attributes[sn]['annotations'].db_column.value
+                        variable = tbl.add_variable(variable_name, s.description)
                         is_pk = "primary_key" in s.annotations
                         if pk_slot:
                             is_pk = sn == pk_slot.name
