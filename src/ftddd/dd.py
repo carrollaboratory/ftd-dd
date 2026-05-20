@@ -151,9 +151,9 @@ class DataDictionary:
 
         return filenames
 
-    def write_enums(self, outdir, filename="acr_tgt_enums.csv"):
+    def write_enums(self, outdir, filename="model_enums.csv"):
         """
-        Write all enumerations across ACR target dds into a single CSV file
+        Write all enumerations across model dds into a single CSV file
         """
         Path(outdir).mkdir(parents=True, exist_ok=True)
         combined_filename = Path(outdir) / filename
